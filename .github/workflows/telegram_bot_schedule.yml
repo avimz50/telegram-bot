@@ -1,0 +1,26 @@
+name: Run Telegram AliBot
+
+on:
+  schedule:
+    - cron: '0 9 * * *'    # כל יום בשעה 09:00 UTC
+    - cron: '0 21 * * *'   # כל יום בשעה 21:00 UTC
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: pip install telebot requests beautifulsoup4
+
+    - name: Run ali_bot.py
+      run: python ali_bot.py
+
