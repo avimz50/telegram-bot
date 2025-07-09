@@ -1,10 +1,7 @@
 name: Run Telegram AliBot
+
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: '0 9 * * *'
-    - cron: '0 21 * * *'
-on:
+  workflow_dispatch:   # מאפשר הרצה ידנית
   schedule:
     - cron: '0 9 * * *'    # כל יום בשעה 09:00 UTC
     - cron: '0 21 * * *'   # כל יום בשעה 21:00 UTC
@@ -27,4 +24,3 @@ jobs:
 
     - name: Run ali_bot.py
       run: python ali_bot.py
-
