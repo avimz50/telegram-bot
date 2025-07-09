@@ -1,4 +1,4 @@
-name: Run Telegram AliBot
+name: Run Telegram AliBot   
 
 on:
   workflow_dispatch:   # מאפשר הרצה ידנית
