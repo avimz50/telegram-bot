@@ -5,7 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 import telebot
 
-# קבלת הטוקן מה-Environment Variable והדפסת בדיקה
+# קבלת הטוקן מהסביבה
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 if BOT_TOKEN:
     BOT_TOKEN = BOT_TOKEN.strip()
@@ -17,37 +17,39 @@ CSV_FILE = 'products.csv'
 
 bot = telebot.TeleBot(BOT_TOKEN)
 
-# פונקציה ליצירת תיאור שיווקי מגוון עם מחיר (אם יש)
-def generate_marketing_text(product_name: str) -> str:
+# פונקציה ליצירת תיאור שיווקי לפי שם ומחיר
+def generate_marketing_text(product_name: str, price: str = None) -> str:
     name = product_name.lower()
     description_parts = []
 
     if "lego" in name:
-        description_parts.append("סט לגו מרהיב להרכבה מהנה ופיתוח חשיבה יצירתית!")
+        description_parts.append("🧱 סט לגו מדהים לבנייה יצירתית!")
     elif "robot" in name or "robotic" in name:
-        description_parts.append("רובוט חכם – צעצוע טכנולוגי שילדים פשוט אוהבים!")
+        description_parts.append("🤖 רובוט חכם – צעצוע טכנולוגי שילדים פשוט אוהבים!")
     elif "watch" in name or "smartwatch" in name:
-        description_parts.append("שעון חכם בעיצוב מודרני עם תכונות מתקדמות.")
+        description_parts.append("⌚ שעון חכם בעיצוב מודרני עם פונקציות מתקדמות.")
     elif "rc" in name or "remote control" in name:
-        description_parts.append("מוצר על שלט רחוק – כיף בלתי נגמר לילדים ומבוגרים!")
+        description_parts.append("🚗 שלט רחוק – כיף אינסופי לילדים!")
     elif "lamp" in name or "light" in name:
-        description_parts.append("תאורה מהממת שתשדרג כל חדר בבית.")
+        description_parts.append("💡 תאורה מדליקה שמשדרגת כל חדר.")
     elif "car" in name and "toy" in name:
-        description_parts.append("מכונית צעצוע איכותית ומרגשת לילדים שאוהבים מהירות!")
+        description_parts.append("🏎️ מכונית צעצוע מדהימה לילדים שאוהבים מהירות!")
     elif "headphone" in name or "earbuds" in name:
-        description_parts.append("אוזניות איכותיות לצליל נקי בכל מצב.")
+        description_parts.append("🎧 אוזניות איכותיות לצליל חד ומדויק.")
     elif "camera" in name:
-        description_parts.append("מצלמה איכותית ללכידת כל רגע חשוב.")
+        description_parts.append("📷 מצלמה מושלמת לתיעוד רגעים יפים.")
     else:
-        description_parts.append("מוצר חם עכשיו באלי אקספרס – שווה הצצה!")
+        description_parts.append("✨ מוצר לוהט מאלי אקספרס – כדאי לבדוק!")
+
+    if price:
+        description_parts.append(f"💰 מחיר: {price}")
 
     description_parts.append("📦 משלוח מהיר לישראל ✔️")
     description_parts.append("🔥 קנייה חכמה עם קישור שותפים – אל תפספסו!")
 
     return "\n".join(description_parts)
 
-
-# פונקציה לשליפת שם המוצר, תמונה ומחיר מהדף
+# פונקציה לשליפת שם מוצר, תמונה ומחיר מהעמוד
 def fetch_product_details(url):
     headers = {'User-Agent': 'Mozilla/5.0'}
     response = requests.get(url, headers=headers)
@@ -57,35 +59,26 @@ def fetch_product_details(url):
     title_tag = soup.find('title')
     title = title_tag.get_text(strip=True).split('|')[0] if title_tag else 'מוצר מאלי אקספרס'
 
-    # שליפת תמונה ראשית
+    # שליפת תמונה
     image_tag = soup.find('meta', property='og:image')
     image_url = image_tag['content'] if image_tag else None
 
-    # ניסיון לשלוף מחיר בכמה דרכים שונות
-    price_selectors = [
+    # שליפת מחיר
+    price = None
+    selectors = [
         {'name': 'class', 'value': 'product-price-value'},
         {'name': 'class', 'value': 'price-current'},
         {'name': 'id', 'value': 'j-sku-discount-price'},
-        # ניתן להוסיף עוד selectors אם צריך
     ]
-
-    price = None
-    for selector in price_selectors:
-        if selector['name'] == 'class':
-            tag = soup.find(class_=selector['value'])
-        elif selector['name'] == 'id':
-            tag = soup.find(id=selector['value'])
-        else:
-            tag = None
-
-        if tag:
+    for selector in selectors:
+        tag = soup.find(**{selector['name']: selector['value']})
+        if tag and tag.get_text(strip=True):
             price = tag.get_text(strip=True)
-            if price:
-                break
+            break
 
     return title, image_url, price
 
-# טעינת מוצרים מקובץ והפצה בטלגרם
+# טעינת קובץ CSV ובחירת מוצר אקראי
 with open(CSV_FILE, newline='', encoding='utf-8') as csvfile:
     reader = list(csv.DictReader(csvfile))
     product = random.choice(reader)
