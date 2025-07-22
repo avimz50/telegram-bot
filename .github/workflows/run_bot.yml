@@ -1,7 +1,7 @@
 name: Run Telegram Bot with Token Check
 
 on:
-  workflow_dispatch:  # אפשרות להרצה ידנית
+  workflow_dispatch:
 
 jobs:
   run-bot:
@@ -23,16 +23,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests beautifulsoup4 pyTelegramBotAPI
 
-      - name: Check BOT_TOKEN presence and length
+      - name: Debug environment variables
         run: |
-          echo "Checking BOT_TOKEN environment variable..."
-          if [ -z "$BOT_TOKEN" ]; then
-            echo "Error: BOT_TOKEN is not set."
-            exit 1
-          else
-            echo "BOT_TOKEN length: ${#BOT_TOKEN}"
-          fi
+          echo "Listing all environment variables:"
+          env
+          echo "BOT_TOKEN length: ${#BOT_TOKEN}"
 
       - name: Run bot script
-        run: |
-          python ali_bot.py
+        run: python ali_bot.py
