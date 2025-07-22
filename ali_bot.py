@@ -18,16 +18,34 @@ CSV_FILE = 'products.csv'
 bot = telebot.TeleBot(BOT_TOKEN)
 
 # פונקציה ליצירת תיאור שיווקי מגוון עם מחיר (אם יש)
-def generate_marketing_text(title, price=None):
-    price_text = f"💰 מחיר משתלם: {price}" if price else "💰 מחיר משתלם!"
-    marketing_texts = [
-        f"🔥 {title} - הזדמנות שלא כדאי לפספס!\n{price_text}\n🚀 איכות מובטחת ושירות מהיר.",
-        f"✨ {title} עכשיו במחיר מיוחד!\n{price_text}\n🎁 מושלם עבורך או כמתנה.",
-        f"🎉 {title} – הטוב ביותר בשוק!\n{price_text}\n📦 משלוח מהיר ואמין.",
-        f"🎯 רוצה איכות במחיר מעולה? {title} כאן בשבילך!\n{price_text}\n✅ אל תחמיץ את ההזדמנות.",
-        f"🔥 מוצר מומלץ: {title}\n{price_text}\n🎁 מתאים לכל בית ולכל שימוש."
-    ]
-    return random.choice(marketing_texts) + "\n\n💥 הזמינו עכשיו לפני שייגמר המלאי!"
+def generate_marketing_text(product_name: str) -> str:
+    name = product_name.lower()
+    description_parts = []
+
+    if "lego" in name:
+        description_parts.append("סט לגו מרהיב להרכבה מהנה ופיתוח חשיבה יצירתית!")
+    elif "robot" in name or "robotic" in name:
+        description_parts.append("רובוט חכם – צעצוע טכנולוגי שילדים פשוט אוהבים!")
+    elif "watch" in name or "smartwatch" in name:
+        description_parts.append("שעון חכם בעיצוב מודרני עם תכונות מתקדמות.")
+    elif "rc" in name or "remote control" in name:
+        description_parts.append("מוצר על שלט רחוק – כיף בלתי נגמר לילדים ומבוגרים!")
+    elif "lamp" in name or "light" in name:
+        description_parts.append("תאורה מהממת שתשדרג כל חדר בבית.")
+    elif "car" in name and "toy" in name:
+        description_parts.append("מכונית צעצוע איכותית ומרגשת לילדים שאוהבים מהירות!")
+    elif "headphone" in name or "earbuds" in name:
+        description_parts.append("אוזניות איכותיות לצליל נקי בכל מצב.")
+    elif "camera" in name:
+        description_parts.append("מצלמה איכותית ללכידת כל רגע חשוב.")
+    else:
+        description_parts.append("מוצר חם עכשיו באלי אקספרס – שווה הצצה!")
+
+    description_parts.append("📦 משלוח מהיר לישראל ✔️")
+    description_parts.append("🔥 קנייה חכמה עם קישור שותפים – אל תפספסו!")
+
+    return "\n".join(description_parts)
+
 
 # פונקציה לשליפת שם המוצר, תמונה ומחיר מהדף
 def fetch_product_details(url):
