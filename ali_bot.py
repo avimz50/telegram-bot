@@ -5,7 +5,6 @@ import requests
 from bs4 import BeautifulSoup
 import telebot
 
-
 # קבלת הטוקן מה-Environment Variable והדפסת בדיקה
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 if BOT_TOKEN:
@@ -13,26 +12,24 @@ if BOT_TOKEN:
 else:
     raise ValueError("ERROR: BOT_TOKEN not found in environment variables")
 
-bot = telebot.TeleBot(BOT_TOKEN)
-
-
 CHANNEL_ID = '@smartlego_israel'
 CSV_FILE = 'products.csv'
 
 bot = telebot.TeleBot(BOT_TOKEN)
 
-# פונקציה ליצירת תיאור שיווקי קצר
-def generate_marketing_text(title):
-    return f"""🔥 {title} 🔥
+# פונקציה ליצירת תיאור שיווקי מגוון עם מחיר (אם יש)
+def generate_marketing_text(title, price=None):
+    price_text = f"💰 מחיר משתלם: {price}" if price else "💰 מחיר משתלם!"
+    marketing_texts = [
+        f"🔥 {title} - הזדמנות שלא כדאי לפספס!\n{price_text}\n🚀 איכות מובטחת ושירות מהיר.",
+        f"✨ {title} עכשיו במחיר מיוחד!\n{price_text}\n🎁 מושלם עבורך או כמתנה.",
+        f"🎉 {title} – הטוב ביותר בשוק!\n{price_text}\n📦 משלוח מהיר ואמין.",
+        f"🎯 רוצה איכות במחיר מעולה? {title} כאן בשבילך!\n{price_text}\n✅ אל תחמיץ את ההזדמנות.",
+        f"🔥 מוצר מומלץ: {title}\n{price_text}\n🎁 מתאים לכל בית ולכל שימוש."
+    ]
+    return random.choice(marketing_texts) + "\n\n💥 הזמינו עכשיו לפני שייגמר המלאי!"
 
-מוצר איכותי במחיר משתלם במיוחד!
-🚀 מתאים לכל אחד – פשוט ונוח
-🎁 אידיאלי כמתנה או שימוש יומיומי
-
-💥 אל תפספסו – מלאי מוגבל! 💥
-"""
-
-# פונקציה לשליפת שם המוצר והתמונה מהדף
+# פונקציה לשליפת שם המוצר, תמונה ומחיר מהדף
 def fetch_product_details(url):
     headers = {'User-Agent': 'Mozilla/5.0'}
     response = requests.get(url, headers=headers)
@@ -46,18 +43,39 @@ def fetch_product_details(url):
     image_tag = soup.find('meta', property='og:image')
     image_url = image_tag['content'] if image_tag else None
 
-    return title, image_url
+    # ניסיון לשלוף מחיר בכמה דרכים שונות
+    price_selectors = [
+        {'name': 'class', 'value': 'product-price-value'},
+        {'name': 'class', 'value': 'price-current'},
+        {'name': 'id', 'value': 'j-sku-discount-price'},
+        # ניתן להוסיף עוד selectors אם צריך
+    ]
 
-# טעינת מוצרים מקובץ
-# טעינת מוצרים מקובץ
+    price = None
+    for selector in price_selectors:
+        if selector['name'] == 'class':
+            tag = soup.find(class_=selector['value'])
+        elif selector['name'] == 'id':
+            tag = soup.find(id=selector['value'])
+        else:
+            tag = None
+
+        if tag:
+            price = tag.get_text(strip=True)
+            if price:
+                break
+
+    return title, image_url, price
+
+# טעינת מוצרים מקובץ והפצה בטלגרם
 with open(CSV_FILE, newline='', encoding='utf-8') as csvfile:
     reader = list(csv.DictReader(csvfile))
     product = random.choice(reader)
     product_url = product['product_url']
     affiliate_link = product['affiliate_link']
 
-    title, image_url = fetch_product_details(product_url)
-    description = generate_marketing_text(title)
+    title, image_url, price = fetch_product_details(product_url)
+    description = generate_marketing_text(title, price)
     message = f"{description}\n🔗 להזמנה: {affiliate_link}"
 
     if image_url:
