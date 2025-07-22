@@ -10,6 +10,9 @@ jobs:
   run-bot:
     runs-on: ubuntu-latest
 
+    env:                         # ✅ הוסף את זה
+      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}   # ✅ טוקן מה־secrets
+
     steps:
     - name: Checkout repo
       uses: actions/checkout@v3
