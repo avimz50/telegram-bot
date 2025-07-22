@@ -5,9 +5,12 @@ import requests
 from bs4 import BeautifulSoup
 import telebot
 
-# קבלת הטוקן מה-Environment Variable
+# קבלת הטוקן מה-Environment Variable והדפסת בדיקה
 BOT_TOKEN = os.getenv('BOT_TOKEN')
-if not BOT_TOKEN:
+print(f"BOT_TOKEN loaded: {BOT_TOKEN is not None}")
+if BOT_TOKEN:
+    print(f"BOT_TOKEN partial: {BOT_TOKEN[:10]}...")  # מציג רק חלק מהטוקן לשמירה על סודיות
+else:
     raise ValueError("ERROR: BOT_TOKEN not found in environment variables")
 
 CHANNEL_ID = '@smartlego_israel'
@@ -56,6 +59,3 @@ with open(CSV_FILE, newline='', encoding='utf-8') as csvfile:
     if image_url:
         bot.send_photo(CHANNEL_ID, image_url, caption=message)
     else:
-        bot.send_message(CHANNEL_ID, message)
-
-print("✅ פורסם בהצלחה לערוץ הטלגרם!")
