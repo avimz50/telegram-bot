@@ -1,12 +1,15 @@
-
+import os
 import csv
 import random
 import requests
 from bs4 import BeautifulSoup
 import telebot
 
-# הגדרות בסיס
-BOT_TOKEN = '7885672101:AAHEA4Va5uZAwIzd4bPy_CPwOF_1YQqDCW4'
+# קבלת הטוקן מה-Environment Variable
+BOT_TOKEN = os.getenv('BOT_TOKEN')
+if not BOT_TOKEN:
+    raise ValueError("ERROR: BOT_TOKEN not found in environment variables")
+
 CHANNEL_ID = '@smartlego_israel'
 CSV_FILE = 'products.csv'
 
