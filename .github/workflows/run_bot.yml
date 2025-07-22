@@ -6,6 +6,8 @@ on:
 jobs:
   run-bot:
     runs-on: ubuntu-latest
+    env:
+      BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
 
     steps:
       - name: Checkout repository
@@ -22,8 +24,6 @@ jobs:
           pip install requests beautifulsoup4 pyTelegramBotAPI
 
       - name: Check BOT_TOKEN presence and length
-        env:
-          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
         run: |
           echo "Checking BOT_TOKEN environment variable..."
           if [ -z "$BOT_TOKEN" ]; then
@@ -34,7 +34,5 @@ jobs:
           fi
 
       - name: Run bot script
-        env:
-          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
         run: |
           python ali_bot.py
