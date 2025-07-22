@@ -35,4 +35,4 @@ def generate_marketing_text(product_name: str, price: str | None = None) -> str:
 
     if "lego" in name:
         description_parts.append("סט לגו מרהיב להרכבה מהנה ופיתוח חשיבה יצירתית!")
-    elif "robot" in name or "robotic" in na
+   elif "robot" in name or "robotic" in name:
