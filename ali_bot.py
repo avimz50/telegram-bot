@@ -46,6 +46,7 @@ def fetch_product_details(url):
     return title, image_url
 
 # טעינת מוצרים מקובץ
+# טעינת מוצרים מקובץ
 with open(CSV_FILE, newline='', encoding='utf-8') as csvfile:
     reader = list(csv.DictReader(csvfile))
     product = random.choice(reader)
@@ -59,3 +60,4 @@ with open(CSV_FILE, newline='', encoding='utf-8') as csvfile:
     if image_url:
         bot.send_photo(CHANNEL_ID, image_url, caption=message)
     else:
+        bot.send_message(CHANNEL_ID, message)
