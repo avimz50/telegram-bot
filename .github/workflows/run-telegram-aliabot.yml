@@ -1,0 +1,41 @@
+name: Run Telegram AliBot with Selenium
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * *'   # כל יום 09:00 UTC
+    - cron: '0 21 * * *'  # כל יום 21:00 UTC
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Chrome and chromedriver
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser chromium-chromedriver
+          # בדיקה שהכל מותקן
+          chromium-browser --version
+          chromedriver --version
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install selenium beautifulsoup4 pyTelegramBotAPI requests
+
+      - name: Run ali_bot.py
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHROMEDRIVER_PATH: /usr/lib/chromium-browser/chromedriver
+          CHROME_BIN: /usr/bin/chromium-browser
+        run: |
+          python ali_bot.py
