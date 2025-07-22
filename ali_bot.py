@@ -5,9 +5,9 @@ import requests
 from bs4 import BeautifulSoup
 import telebot
 
-# קבלת הטוקן מה-Environment Variable והדפסת בדיקה
-BOT_TOKEN = "7885672101:AAFe53N-viS2lfDNhHvj0TWqlMIv7OvrDiQ"
 
+# קבלת הטוקן מה-Environment Variable והדפסת בדיקה
+BOT_TOKEN = os.getenv('BOT_TOKEN')
 print(f"BOT_TOKEN loaded: {BOT_TOKEN is not None}")
 if BOT_TOKEN:
     print(f"BOT_TOKEN partial: {BOT_TOKEN[:10]}...")  # מציג רק חלק מהטוקן לשמירה על סודיות
