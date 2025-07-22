@@ -8,11 +8,13 @@ import telebot
 
 # קבלת הטוקן מה-Environment Variable והדפסת בדיקה
 BOT_TOKEN = os.getenv('BOT_TOKEN')
-print(f"BOT_TOKEN loaded: {BOT_TOKEN is not None}")
 if BOT_TOKEN:
-    print(f"BOT_TOKEN partial: {BOT_TOKEN[:10]}...")  # מציג רק חלק מהטוקן לשמירה על סודיות
+    BOT_TOKEN = BOT_TOKEN.strip()
 else:
     raise ValueError("ERROR: BOT_TOKEN not found in environment variables")
+
+bot = telebot.TeleBot(BOT_TOKEN)
+
 
 CHANNEL_ID = '@smartlego_israel'
 CSV_FILE = 'products.csv'
