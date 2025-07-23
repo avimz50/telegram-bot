@@ -10,13 +10,16 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup
 
-# הטוקן והערוץ - מומלץ להגדיר ב-GitHub Secrets או במשתני סביבה
-BOT_TOKEN = os.getenv('BOT_TOKEN')
-CHROMEDRIVER_PATH = os.getenv('CHROMEDRIVER_PATH', '/usr/lib/chromium-browser/chromedriver')
-CHANNEL_ID = '@smartlego_israel'
 
-if not BOT_TOKEN:
-    raise ValueError("ERROR: BOT_TOKEN לא מוגדר במשתני הסביבה")
+# קבלת הטוקן מה-Environment Variable והדפסת בדיקה
+BOT_TOKEN = os.getenv('BOT_TOKEN')
+if BOT_TOKEN:
+    BOT_TOKEN = BOT_TOKEN.strip()
+else:
+    raise ValueError("ERROR: BOT_TOKEN not found in environment variables")
+
+CHANNEL_ID = '@smartlego_israel'
+CSV_FILE = 'products.csv'
 
 bot = telebot.TeleBot(BOT_TOKEN)
 
